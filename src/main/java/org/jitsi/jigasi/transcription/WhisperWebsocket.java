@@ -177,8 +177,16 @@ public class WhisperWebsocket
         urlBuilder.append(websocketUrlConfig).append("/").append(connectionId);
         if (roomName != null && !roomName.isEmpty())
         {
-            urlBuilder.append("?roomname=")
-                .append(java.net.URLEncoder.encode(roomName, StandardCharsets.UTF_8));
+            urlBuilder.append("?roomname=");
+            try
+            {
+                urlBuilder.append(java.net.URLEncoder.encode(roomName, "UTF-8"));
+            }
+            catch (java.io.UnsupportedEncodingException e)
+            {
+                // UTF-8 her JVM'de mevcut olmalı; yine de bir sorun olursa ham değerle devam ederiz.
+                urlBuilder.append(roomName);
+            }
         }
         websocketUrl = urlBuilder.toString();
         if (logger.isDebugEnabled())
