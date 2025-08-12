@@ -161,7 +161,7 @@ public class WhisperTranscriptionService
             if (socket == null)
             {
                 logger.info("Creating a new websocket connection.");
-                socket = new WhisperWebsocket(ctx.getLogger());
+                socket = new WhisperWebsocket(ctx.getLogger(), roomId);
 
                 socket.connect();
 

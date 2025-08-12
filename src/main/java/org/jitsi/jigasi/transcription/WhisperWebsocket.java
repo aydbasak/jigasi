@@ -121,6 +121,11 @@ public class WhisperWebsocket
 
     private boolean reconnecting = false;
 
+    /**
+     * The room name used for grouping transcripts on the STT server.
+     */
+    private final String roomName;
+
     static
     {
         jwtAudience = JigasiBundleActivator.getConfigurationService()
@@ -156,9 +161,10 @@ public class WhisperWebsocket
 
     private final JSONParser jsonParser = new JSONParser();
 
-    public WhisperWebsocket(Logger parentLogger)
+    public WhisperWebsocket(Logger parentLogger, String roomName)
     {
         logger = parentLogger.createChildLogger(WhisperWebsocket.class.getName());
+        this.roomName = roomName;
     }
 
     /**
@@ -167,7 +173,14 @@ public class WhisperWebsocket
      */
     private void generateWebsocketUrl()
     {
-        websocketUrl = websocketUrlConfig + "/" + connectionId;
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(websocketUrlConfig).append("/").append(connectionId);
+        if (roomName != null && !roomName.isEmpty())
+        {
+            urlBuilder.append("?roomname=")
+                .append(java.net.URLEncoder.encode(roomName, StandardCharsets.UTF_8));
+        }
+        websocketUrl = urlBuilder.toString();
         if (logger.isDebugEnabled())
         {
             logger.debug(" Whisper URL: " + websocketUrl);
